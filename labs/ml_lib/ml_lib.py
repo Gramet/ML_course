@@ -129,3 +129,82 @@ def stochastic_gradient_descent(
               bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     
     return losses, ws
+
+"""Least Squares"""
+
+def least_squares(y, tx):
+    """calculate the least squares solution."""
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # least squares: TODO
+    # returns mse, and optimal weights
+    # ***************************************************
+    w_opt = np.linalg.inv(tx.T.dot(tx)).dot(tx.T).dot(y)
+    #w_opt = np.linalg.solve(tx,y)
+    e = y - tx.dot(w_opt)
+    mse = 1/(2*np.shape(tx)[0]) * e.dot(e.T)
+    
+    return mse, w_opt
+
+"""Build polynomial basis"""
+
+def build_poly(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # polynomial basis function: TODO
+    # this function should return the matrix formed
+    # by applying the polynomial basis to the input data
+    # ***************************************************
+    phi = np.zeros((x.shape[0], degree+1))
+    for i in range(0,x.shape[0]):
+        for j in range(0,degree+1):
+            phi[i,j] = x[i]**j
+    return phi
+
+"""Ridge Regression"""
+
+def ridge_regression(y, tx, lambda_):
+    """implement ridge regression."""
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # ridge regression: TODO
+    # ***************************************************
+
+    L = np.eye(tx.shape[1])*lambda_*2*len(y)
+    weights= np.linalg.inv(tx.T.dot(tx) + L.T.dot(L)).dot(tx.T).dot(y)
+    loss = compute_loss(y,tx,weights)
+    
+    return weights, loss
+
+"""Random split data"""
+
+def split_data(x, y, ratio, seed=1):
+    """
+    split the dataset based on the split ratio. If ratio is 0.8 
+    you will have 80% of your data set dedicated to training 
+    and the rest dedicated to testing
+    """
+    # set seed
+    np.random.seed(seed)
+    # ***************************************************
+    # split the data based on the given ratio: 
+    # ***************************************************
+    temp = np.random.rand(x.shape[0])
+    ind = np.argsort(temp)
+    
+    lim = int(np.floor(ratio*x.shape[0]))
+    x_train = np.zeros(lim)
+    y_train = np.zeros(lim)
+    x_test = np.zeros(x.shape[0]-lim)
+    y_test = np.zeros(x.shape[0]-lim)
+
+    for i in range(0,lim):
+        x_train[i] = x[ind[i]]
+        y_train[i] = y[ind[i]]
+        
+    for j in range(lim,x.shape[0]):
+        x_test[j-lim] = x[ind[j]]
+        y_test[j-lim] = y[ind[j]]   
+        
+    return x_train, y_train, x_test, y_test

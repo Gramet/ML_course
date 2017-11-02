@@ -156,11 +156,12 @@ def build_poly(x, degree):
     # this function should return the matrix formed
     # by applying the polynomial basis to the input data
     # ***************************************************
-    phi = np.zeros((x.shape[0], degree+1))
-    for i in range(0,x.shape[0]):
-        for j in range(0,degree+1):
-            phi[i,j] = x[i]**j
-    return phi
+    _x = np.ones((np.shape(x)[0], 1 + np.shape(x)[1]*degree))
+    for i in range(0, degree):
+        for k in range(0, np.shape(x)[1]):
+            _id = 1 + i*np.shape(x)[1] + k
+            _x[:, _id] = x[:, k]**(i+1)
+    return _x
 
 """Ridge Regression"""
 
